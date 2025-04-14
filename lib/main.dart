@@ -11,8 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Doctor Matching',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      title: 'AI Doctor Match',
       home: AIDoctorMatchingPage(),
     );
   }
@@ -81,38 +80,73 @@ class AIDoctorMatchingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Doctor's List"),
-        backgroundColor: Colors.teal,
         centerTitle: true,
+        backgroundColor: Colors.teal,
+        elevation: 4,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: doctors.length,
-        itemBuilder: (context, index) {
-          final doctor = doctors[index];
-          return Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-              leading: const Icon(Icons.person, size: 40, color: Colors.teal),
-              title: Text(
-                doctor['name'] ?? '',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: doctors.length,
+          itemBuilder: (context, index) {
+            final doctor = doctors[index];
+            return Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Specialization: ${doctor['specialization']}'),
-                  Text('Experience: ${doctor['experience']}'),
-                  Text('Hospital: ${doctor['hospital']}'),
-                ],
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.teal,
+                      child: Icon(Icons.person, color: Colors.white, size: 30),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            doctor['name'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Specialization: ${doctor['specialization']}',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
+                          Text(
+                            'Experience: ${doctor['experience']}',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
+                          Text(
+                            'Hospital: ${doctor['hospital']}',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              isThreeLine: true,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
