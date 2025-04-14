@@ -1,153 +1,205 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class DoctorAppointmentPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'AI Doctor Match',
-      home: AIDoctorMatchingPage(),
-    );
-  }
+  _DoctorAppointmentPageState createState() => _DoctorAppointmentPageState();
 }
 
-class AIDoctorMatchingPage extends StatelessWidget {
+class _DoctorAppointmentPageState extends State<DoctorAppointmentPage> {
+  DateTime? _selectedDateTime;
+  String? _selectedDoctor;
+
   final List<Map<String, String>> doctors = [
-    {
-      'name': 'Dr. Shahriar',
-      'specialization': 'AI Diagnostics Specialist',
-      'experience': '10 years',
-      'hospital': 'FutureCare Hospital',
-    },
-    {
-      'name': 'Dr. Ahmed',
-      'specialization': 'Neural Network Analyst',
-      'experience': '8 years',
-      'hospital': 'SmartHealth Institute',
-    },
-    {
-      'name': 'Dr. Shovo',
-      'specialization': 'Predictive Health Expert',
-      'experience': '12 years',
-      'hospital': 'NextGen Clinic',
-    },
-    {
-      'name': 'Dr. Siam',
-      'specialization': 'AI Diagnostics Specialist',
-      'experience': '10 years',
-      'hospital': 'FutureCare Hospital',
-    },
-    {
-      'name': 'Dr. Mim',
-      'specialization': 'Neural Network Analyst',
-      'experience': '8 years',
-      'hospital': 'SmartHealth Institute',
-    },
-    {
-      'name': 'Dr. Abir',
-      'specialization': 'Predictive Health Expert',
-      'experience': '12 years',
-      'hospital': 'NextGen Clinic',
-    },
-    {
-      'name': 'Dr. Rabbi',
-      'specialization': 'AI Diagnostics Specialist',
-      'experience': '10 years',
-      'hospital': 'FutureCare Hospital',
-    },
-    {
-      'name': 'Dr. Raj Patel',
-      'specialization': 'Neural Network Analyst',
-      'experience': '8 years',
-      'hospital': 'SmartHealth Institute',
-    },
-    {
-      'name': 'Dr. Kajol',
-      'specialization': 'Predictive Health Expert',
-      'experience': '12 years',
-      'hospital': 'NextGen Clinic',
-    },
+    {'name': 'Dr. Shahriar', 'specialization': 'AI Diagnostics Specialist'},
+    {'name': 'Dr. Ahmed', 'specialization': 'Neural Network Analyst'},
+    {'name': 'Dr. Shovo', 'specialization': 'Predictive Health Expert'},
+    {'name': 'Dr. Siam', 'specialization': 'AI Diagnostics Specialist'},
+    {'name': 'Dr. Mim', 'specialization': 'Neural Network Analyst'},
+    {'name': 'Dr. Abir', 'specialization': 'Predictive Health Expert'},
+    {'name': 'Dr. Rabbi', 'specialization': 'AI Diagnostics Specialist'},
+    {'name': 'Dr. Raj Patel', 'specialization': 'Neural Network Analyst'},
+    {'name': 'Dr. Kajol', 'specialization': 'Predictive Health Expert'},
   ];
+
+  Future<void> _pickDateTime() async {
+    // Pick Date
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateTime ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      // Pick Time
+      final pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(
+          _selectedDateTime ?? DateTime.now(),
+        ),
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          _selectedDateTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Doctor's List"),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-        elevation: 4,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      appBar: AppBar(title: Text("Doctor Appointment")),
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.network(
+              'https://i.postimg.cc/MKQQfQDt/how-to-build-a-doctor-appointment-app-for-yo-format-jpeg-jpg11.jpg',
+              fit: BoxFit.cover,
+              color: Colors.white.withOpacity(0.85),
+              colorBlendMode: BlendMode.lighten,
+            ),
           ),
-        ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: doctors.length,
-          itemBuilder: (context, index) {
-            final doctor = doctors[index];
-            return Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.teal,
-                      child: Icon(Icons.person, color: Colors.white, size: 30),
+
+          // Foreground content
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Select Doctor:', style: TextStyle(fontSize: 18)),
+                  DropdownButton<String>(
+                    value: _selectedDoctor,
+                    hint: Text('Select a doctor'),
+                    isExpanded: true,
+                    items:
+                        doctors.map((doc) {
+                          return DropdownMenuItem<String>(
+                            value: doc['name'],
+                            child: Text(
+                              '${doc['name']} (${doc['specialization']})',
+                            ),
+                          );
+                        }).toList(),
+                    onChanged: (val) => setState(() => _selectedDoctor = val),
+                  ),
+                  SizedBox(height: 24),
+
+                  Text('Appointment Time:', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 8),
+
+                  // Date & time selection container
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            doctor['name'] ?? '',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_today, color: Colors.blue),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            _selectedDateTime != null
+                                ? DateFormat(
+                                  'dd MMM yyyy, hh:mm a',
+                                ).format(_selectedDateTime!)
+                                : 'Tap to select date & time.',
+                            style: TextStyle(
+                              fontSize: 16,
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Specialization: ${doctor['specialization']}',
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                          Text(
-                            'Experience: ${doctor['experience']}',
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                          Text(
-                            'Hospital: ${doctor['hospital']}',
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                        ],
-                      ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.grey),
+                          onPressed: _pickDateTime,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  SizedBox(height: 40),
+
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_selectedDoctor != null &&
+                            _selectedDateTime != null) {
+                          final formattedDateTime = DateFormat(
+                            'dd MMMM yyyy – hh:mm a',
+                          ).format(_selectedDateTime!);
+
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text('Thank You!'),
+                                  content: Text(
+                                    'Your appointment with $_selectedDoctor on $formattedDateTime is confirmed.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please select a doctor and appointment time.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple.shade100,
+                        foregroundColor: Colors.deepPurple,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      child: Text('Confirm Appointment'),
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: DoctorAppointmentPage(),
+    ),
+  );
 }
